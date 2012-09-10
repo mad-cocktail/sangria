@@ -1,4 +1,4 @@
-{application, rum,
+{application, sangria,
  [
   {description, ""},
   {vsn, git},

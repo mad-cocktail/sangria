@@ -18,16 +18,31 @@ search_and_transform_function_call_with_any(Node) ->
     end.
 
 decode_arguments([RecNames, Action | Args]) ->
-    RecNameValues = decode_arguments(RecNames),
+    RecNameValues = decode_record_names(RecNames),
     AltAction = maybe_optional_argument(Args),
     {RecNameValues, Action, AltAction}.
 
 search_and_transform_record_access_any(RecNameValues, AltAction) ->
     fun(Node) ->
             case node_type(Node) of
+                record_expr -> %% X#node{f1 = Y}
+                    Node;
+                record_access -> %% X#node.f1
+                    handle_record_access_any(RecNameValues, AltAction, Node);
+                    Node;
                 _OtherType -> io:format(user, "~nOtherType: ~p~n", [_OtherType])
             end
         end.
+
+handle_record_access_any(RecNameValues, AltAction, Node) ->
+    RecType = erl_syntax:atom_value(erl_syntax:record_expr_type(Node)),
+    case RecType of
+        any -> %% #any.field
+            %% TODO: write here
+            Node;
+        _OtherRecType ->
+            Mode
+    end.
 
 maybe_optional_argument([]) -> undefined;
 maybe_optional_argument([X]) -> X.
@@ -52,3 +67,5 @@ is_local_function(Node, FunName) ->
 always(_) -> true.
 
 node_type(Node) -> erl_syntax:type(Node).
+
+
