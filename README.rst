@@ -13,7 +13,21 @@ It is a tiny parse transform.
     :target: http://travis-ci.org/mad-cocktail/sangria
 
 
-Why?
+Installation
+------------
+
+Add this repository as dependence of your project::
+
+    {deps, [                                                                       
+       {sangria,  ".*", {git, "git://github.com/mad-cocktail/sangria.git", "HEAD"}}  
+       ]}.                                                                            
+
+Include this command into each file, where you want to use this parse
+transform::
+
+    -compile({parse_transform, sangria}).
+
+Idea
 ----
 
 If you need to set same field for different records, you can write something
@@ -50,23 +64,12 @@ If you want to handle unmathed values, then use the 3rd argument::
 The third argument will be evaluated, if nothing matched. It is disallowed to
 use ``#any`` record inside this argument.
 
-This parse transform must be used before Rum.
 
+Mix Rum and Sangria
+-------------------
 
-Why were this application and Rum separated?
---------------------------------------------
+If you want to use Rum, than this parse transform must be executed before Rum::
 
-It was made for flexibility. You can include some other parse transform
-beetween them or to use only one of them.
+    -compile({parse_transform, sangria}).
+    -compile({parse_transform, rum}).
 
-
-Yet another parse transform?
-----------------------------
-
-I am sorry, but I really wanted to avoid this.
-
-First, I wrote the same code for 10 different records, then I tried to use
-macroses. Finally, I thought, that the PT is a good tool for this job.
-
-Don't use it, when you have only few records and nothing generalized beetween
-them.
