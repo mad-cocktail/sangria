@@ -11,11 +11,14 @@ search_and_transform_function_call_with_any(Node) ->
     case is_local_function(Node, with_any) of
         true ->
             {RecNames, Action, AltAction}
-                 = decode_arguments(erl_syntax:application_arguments(Node)),
+            = decode_arguments(to_list(erl_syntax:application_arguments(Node))),
             F = search_and_transform_record_action_any(RecNames, AltAction),
             erl_syntax_lib:map(F, Action);
         false -> Node
     end.
+
+to_list(X) when is_list(X) -> X;
+to_list(X) -> erl_syntax:list_elements(X).
 
 decode_arguments([RecNames, Action | Args]) ->
     RecNameValues = erl_syntax:list_elements(RecNames),
