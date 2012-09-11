@@ -5,7 +5,7 @@ It is a tiny parse transform.
 
 **License**: MIT
 
-**Author**: Uvarov Michael (freeakk@gmail.com)
+**Author**: Uvarov Michael (arcusfelis@gmail.com)
 
 
 .. image:: https://secure.travis-ci.org/mad-cocktail/sangria.png?branch=master
