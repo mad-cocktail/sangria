@@ -79,7 +79,7 @@ handle_record_expr_any(RecNames, AltAction, Node) ->
             Arg = erl_syntax:record_expr_argument(Node),
             F = generate_case_body_for_record_expr_any(Node),
             Clauses = generate_record_match(RecNames, AltAction, F),
-            erl_syntax:case_expr(Arg, Clauses);
+            copy_pos(Node, erl_syntax:case_expr(Arg, Clauses));
         _OtherRecType ->
             Node
     end.
@@ -90,7 +90,7 @@ generate_case_body_for_record_expr_any(OldNode) ->
     Arg = erl_syntax:record_expr_argument(OldNode),
     Fields = erl_syntax:record_expr_fields(OldNode),
     fun(Name) ->
-            [erl_syntax:record_expr(Arg, Name, Fields)]
+            [copy_pos(Name, erl_syntax:record_expr(Arg, Name, Fields))]
         end.
 
 
@@ -105,7 +105,7 @@ handle_record_access_any(RecNames, AltAction, Node) ->
             Arg = erl_syntax:record_access_argument(Node),
             F = generate_case_body_for_record_access_any(Node),
             Clauses = generate_record_match(RecNames, AltAction, F),
-            erl_syntax:case_expr(Arg, Clauses);
+            copy_pos(Node, erl_syntax:case_expr(Arg, Clauses));
         _OtherRecType ->
             Node
     end.
@@ -116,7 +116,7 @@ generate_case_body_for_record_access_any(OldNode) ->
     Arg = erl_syntax:record_access_argument(OldNode),
     Field = erl_syntax:record_access_field(OldNode),
     fun(Name) ->
-            [erl_syntax:record_access(Arg, Name, Field)]
+            [copy_pos(Name, erl_syntax:record_access(Arg, Name, Field))]
         end.
 
 
@@ -138,7 +138,17 @@ generate_record_match(RecNames, AltAction, BodyGen) ->
 
 
 %% ``#Name{}``.
-rec(Name) -> erl_syntax:record_expr(none, Name, []).
+rec(Name) -> copy_pos(Name, erl_syntax:record_expr(none, Name, [])).
 
 
+
+
+%% @doc Copy positional information from `From' node to `To' node.
+-spec copy_pos(From, To) -> To when
+    From :: erl_syntax:syntaxTree(),
+    To :: From.
+
+copy_pos(From, To) ->
+    Pos = erl_syntax:get_pos(From),
+    erl_syntax:set_pos(To, Pos).
 
